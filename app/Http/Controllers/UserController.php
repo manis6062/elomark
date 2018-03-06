@@ -123,20 +123,32 @@ class UserController extends Controller
                 $user->client = 'n';
             }
 
-            // if($user_request->role_id == 4){
-            //     $user->client_parent = 1;
+            if($user_request->role_id == 4){
+                $user->client_parent = 1;
+            }else{
+              $user->client_parent = 0;
+            }
+
+            // if($user_request->client_parent){
+            //     $user->client_parent = $user_request->client_parent;
             // }else{
-            //   $user->client_parent = 0;
+            //   $user->client_parent = '0';
             // }
 
+            // // if($user_request->role_id == 4){
+            // //     $user->client_parent = 1;
+            // // }else{
+            // //   $user->client_parent = 0;
+            // // }
 
-            // dd($user_request->client_parent);
 
-            if($user_request->client_parent){
-                $user->client_parent = $user_request->client_parent;
-            }else{
-              $user->client_parent = '0';
-            }
+            // // dd($user_request->client_parent);
+
+            // if($user_request->client_parent){
+            //     $user->client_parent = $user_request->client_parent;
+            // }else{
+            //   $user->client_parent = '0';
+            // }
 
              if($user_request->campaign_parent){
                 $user->campaign_parent = $user_request->campaign_parent;
@@ -214,9 +226,17 @@ class UserController extends Controller
 
 if (Auth::user()->isClientAdministrator()){
 
+  if(!empty(User::find(Auth::user()->id)->getAccounts->first())){
   $my_account_id = User::find(Auth::user()->id)->getAccounts->first()->id;
 
-  $getAllUsers = Account::find($my_account_id)->getUsers->where('client' , $is_client)->where('client_parent' , Auth::user()->id);
+  $getAllUsers = Account::find($my_account_id)->getUsers->where('client' , $is_client)->where('client_parent' , 0);
+
+  }
+  else{
+    $getAllUsers = NULL;
+  }
+
+
 }elseif (Auth::user()->isCampaignManager()){
   // $getAllUsers = User::all()->where('client' , $is_client)->where('campaign_parent' , Auth::user()->id);
      $getAllUsers = User::where('client' , $is_client)->orderBy('created_at', 'DESC')->get();
@@ -388,12 +408,14 @@ if (Auth::user()->isClientAdministrator()){
             }
 
 
-             if($user_request->role_id){
+        if($user_request->role_id){
 
               if($user_request->role_id == 4){
-                $user->client_parent = 0;
+                $user->client_parent = 1;
+            }else{
+              $user->client_parent = '0';
+            }
           }
-
 
             $user->save();
 
@@ -460,12 +482,16 @@ if (Auth::user()->isClientAdministrator()){
         if($user->client == 'y'){
            $userAccount = UserAccount::where('user_id' , $id)->first();
            $userAccount->delete(); 
+           Session::flash('success', 'User successfully deleted.');
+            return redirect('user/showClient');
         }
-
-      
+        else{
 
         Session::flash('success', 'User successfully deleted.');
             return redirect()->back();
+        }
+
+
     }
 
 
@@ -511,11 +537,22 @@ if (Auth::user()->isClientAdministrator()){
                $users = User::searchClients($request->keyword);
                              }
         elseif(Auth::user()->isClientAdministrator()){
- $my_account_id = User::find(Auth::user()->id)->getAccounts->first()->id->where('');
+
+
+          if(!empty(User::find(Auth::user()->id)->getAccounts->first())){
+ $my_account_id = User::find(Auth::user()->id)->getAccounts->first()->id;
  $users = User::SearchClientsAsClientAdmin($request->keyword , $my_account_id);
+          }
+          else{
+            $users = NULL;
+          }
+
+
 
   }else{
          $users = User::searchClients($request->keyword);
+
+         // dd($users);
 
                              }
 

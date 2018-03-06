@@ -25,7 +25,14 @@ class HomeController extends Controller
 
 if (Auth::user()->isClient() || Auth::user()->isClientAdministrator()){
              $user = Auth::user()->id;
-             $client_logo = User::find($user)->getAccounts->first()->client_logo;
+
+          if(!empty(User::find($user)->getAccounts->first())){
+                         $client_logo = User::find($user)->getAccounts->first()->client_logo;
+
+                     }else{
+                         $client_logo = NULL;
+                     }
+
          }
          else{
             $client_logo = NULL;

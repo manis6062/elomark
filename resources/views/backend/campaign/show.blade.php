@@ -86,6 +86,7 @@
                                                         <tbody>
                
 @foreach($getall_Campaigns as $value)
+@if(!empty($value->account))
   <tr>
 
       <td>
@@ -103,8 +104,9 @@
 @endif
 
   </tr>
+    @endif
   @endforeach
-                                                           
+
                                                     </table>
                                                 </div>
        

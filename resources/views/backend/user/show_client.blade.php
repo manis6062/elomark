@@ -88,7 +88,11 @@
 
      </tr>
    </thead>
-   <tbody>                    
+
+
+@if(Auth::user()->isClientAdministrator())
+   <tbody>   
+@if(!empty($getall_users))
 
     @foreach($getall_users as $value)
     <tr class="text-center">
@@ -102,7 +106,37 @@
       <td class="text-capitalize"><span class="status">{{$value->status}}</span></td>
     </tr>
     @endforeach
-  </tbody>     
+        @endif
+
+  </tbody> 
+    @else 
+       <tbody>   
+
+
+    @foreach($getall_users as $value)
+@if(!empty(App\User::find($value->id)->getAccounts->first()))
+    <?php 
+     $account_id = App\User::find($value->id)->getAccounts->first()->id;
+     $account_status = App\Account::find($account_id)->status;
+ ?>
+
+
+@if($account_status != NULL)
+    <tr class="text-center">
+      <td class="text-left">{{$value->firstname}} {{$value->surname}}</td>
+      <td class="text-underline"><a href= "{{url('user') . '/' . $value->id . '/view' }}">View User</a></td>
+      <td class="text-underline"><a href= "{{url('user') . '/' . $value->id . '/edit' }}">Edit User</a></td>
+
+
+        <td> <a class="text-underline delete-user" href="{{route('user.destroy', $value->id)}}">Delete User</a></td>
+
+      <td class="text-capitalize"><span class="status">{{$value->status}}</span></td>
+    </tr>
+     @endif
+    @endif
+    @endforeach
+  </tbody> 
+  @endif   
 </table>
 </div>
 

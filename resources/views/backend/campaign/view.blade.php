@@ -23,7 +23,7 @@
 
 
 
-@if (Auth::user()->isClient())
+        @if (Auth::user()->isClient() || Auth::user()->isClientAdministrator())
 
 
 <div class="card-block">
@@ -32,7 +32,7 @@
 <div class="col-3">
  
             <h6 class="m-b-30 text-capitalize f-w-900">  <span class="text-muted">Client:  </span>
-                   {{Auth::user()->firstname}} {{Auth::user()->surname}}</h6>
+                   {{App\Account::find($campaign->account_id)->name}}</h6>
                    <hr>
                      <h6 class="m-b-30 text-capitalize f-w-900"> <span class="text-muted">Status: </span>
                  {{$campaign->status}} </h6>

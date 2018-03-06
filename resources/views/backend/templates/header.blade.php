@@ -122,7 +122,18 @@
 
                          if (Auth::user()->isClient() || Auth::user()->isClientAdministrator()){
                            $user = Auth::user()->id;
-                           $client_logo = App\User::find($user)->getAccounts->first()->client_logo;
+                 
+
+                           if(!empty(App\User::find($user)->getAccounts->first())){
+                             $client_logo = App\User::find($user)->getAccounts->first()->client_logo;
+
+
+                                  }
+                                  else{
+                                    $client_logo = NULL;
+                                  }
+
+                          
                          }
                          elseif(Auth::user()->isAdministrator() || Auth::user()->isCampaignManager()){
 

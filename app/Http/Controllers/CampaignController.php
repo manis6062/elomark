@@ -25,7 +25,8 @@ class CampaignController extends Controller
     public function index($id)
     {
      
-        if (Auth::user()->isClient()){
+        if (Auth::user()->isClient() || Auth::user()->isClientAdministrator())
+{
          $campaign = DB::table('campaign_dashboard_permission')
             ->join('campaigns', 'campaigns.id', '=', 'campaign_dashboard_permission.campaign_id')
             ->join('users', 'users.id', '=', 'campaign_dashboard_permission.user_id')
@@ -52,7 +53,7 @@ class CampaignController extends Controller
     {
 
 
-        $sales_developers = User::getUserAndRoles(3);
+        $sales_developers = User::getSalesDevelopers(3);
         $clients = User::getUserAndRoles(5);
         $getAccounts = Account::all();
        return view('backend.campaign.create')->with('get_accounts' ,$getAccounts)->with('sales_developers' , $sales_developers)->with('clients' , $clients);
@@ -250,9 +251,17 @@ class CampaignController extends Controller
 
 
         $my_id = Auth::user()->id;
-        $my_account = User::find($my_id)->getAccounts->first()->name;
+ 
+       if(!empty(User::find($my_id)->getAccounts->first())){
+         $my_account = User::find($my_id)->getAccounts->first()->name;
 
         $getCampaigns = $getCampaign->where('cdp_user_id' , $my_id)->where('status' , $status);
+       }
+       else{
+        $getCampaigns = NULL;
+       }
+
+       
         
 
 
@@ -342,7 +351,7 @@ foreach($columns as $column)
   $query->orWhere($column, '=', $id);
 }
 
-$getAllCampaigns = $query->get();
+$getAllCampaigns = $query->get()->where('status' , 'live');
 
        return view('backend.campaign.mylive')->with('getall_Campaigns' , $getAllCampaigns)->with('status' , $status);
     }
@@ -550,7 +559,7 @@ foreach($columns as $column)
 {
   $query->orWhere($column, '=', $user_id);
 }
-$getAllCampaigns = $query->SearchByKeywordBySales($request->keyword)->get();
+$getAllCampaigns = $query->SearchByKeywordBySales($request->keyword)->get()->where('status' , 'live');
 
       }
 

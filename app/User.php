@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Role;
 use App\Campaign;
 use DB;
+use Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
@@ -116,7 +117,12 @@ class User extends Authenticatable
 
 
           public static function getUserAndRoles($role_id){
-          return DB::select("select u.id , u.firstname, u.surname from users u left join user_roles ur on u.id = ur.user_id left join roles r on r.id = ur.role_id where role_id = $role_id");
+          return DB::select("select u.id , u.firstname, u.surname from users u left join user_roles ur on u.id = ur.user_id left join roles r on r.id = ur.role_id where role_id = $role_id and u.deleted_at IS NULL");
+          }
+
+
+          public static function getSalesDevelopers($role_id){
+          return DB::select("select u.id , u.firstname, u.surname from users u left join user_roles ur on u.id = ur.user_id left join roles r on r.id = ur.role_id where ur.role_id = 3 and u.deleted_at IS NULL");
           }
 
 
@@ -171,7 +177,7 @@ class User extends Authenticatable
           public static function searchClients($keyword)
     {
        if ($keyword!='') {
-         return DB::select("select * from users u left join user_accounts u_a on u.id = u_a.user_id LEFT JOIN accounts a on u_a.account_id = a.id where ((u.client = 'y') and (u.firstname LIKE '%{$keyword}%' or u.surname like '%{$keyword}%') and u.deleted_at IS NULL)");
+         return DB::select("select u.* from users u left join user_accounts u_a on u.id = u_a.user_id LEFT JOIN accounts a on u_a.account_id = a.id where ((u.client = 'y') and (u.firstname LIKE '%{$keyword}%' or u.surname like '%{$keyword}%') and u.deleted_at IS NULL)");
     }
     else
       return NULL;
@@ -181,6 +187,7 @@ class User extends Authenticatable
 
        public static function SearchClientsAsClientAdmin($keyword , $account_id)
     {
+
        if ($keyword!='') {
          return DB::select("select * from users u left join user_accounts u_a on u.id = u_a.user_id LEFT JOIN accounts a on u_a.account_id = a.id where ((u.client = 'y') and (u.client_parent = 0) and (a.id = $account_id) and (u.firstname LIKE '%{$keyword}%' or u.surname like '%{$keyword}%') and u.deleted_at IS NULL)");
     }

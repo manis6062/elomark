@@ -117,6 +117,9 @@
    </thead>
    <tbody>   
     @foreach($getCampaigns as $value)
+
+
+    @if(!empty($accounts->find($value->account_id)))
   
     <tr class="text-center">
       {{ Form::open(['action' => 'UserController@managerCampaignAccess', 'method' => 'POST']) }} 
@@ -140,6 +143,7 @@
   {{Form::close()}}
 
     </tr>
+    @endif
    
     @endforeach
 

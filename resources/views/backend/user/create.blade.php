@@ -40,9 +40,9 @@
 
    {!! csrf_field() !!}
 
-                              @if (Auth::user()->isClientAdministrator())
+                            {{--   @if (Auth::user()->isClientAdministrator())
                               <input type="hidden" name="client_parent" value="{{Auth::user()->id}}">
-                              @endif
+                              @endif --}}
 
                               @if (Auth::user()->isCampaignManager())
                               <input type="hidden" name="campaign_parent" value="{{Auth::user()->id}}">
